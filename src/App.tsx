@@ -72,6 +72,7 @@ function buildColumns(
       renderCell(params: GridRenderCellParams<Person>) {
         return (
           <IconButton
+            className='delete-person'
             aria-label="Delete Row"
             onClick={(e) => {
               e.stopPropagation()
@@ -141,6 +142,7 @@ function App() {
   const Toolbar = () => (
     <GridToolbarContainer>
       <IconButton
+        className='new-person'
         onClick={() => {
           addPerson()
         }}
@@ -155,6 +157,7 @@ function App() {
     <div className="App">
       <Box sx={{ height: 600, width: '75vw' }}>
         <DataGrid
+          className='data-grid'
           rows={people}
           columns={buildColumns(people, departments, removePerson)}
           processRowUpdate={(newRow) => {
