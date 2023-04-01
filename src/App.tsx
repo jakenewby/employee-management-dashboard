@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import './App.css'
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridToolbarContainer,
+} from '@mui/x-data-grid'
 import Box from '@mui/material/Box'
 import UserDataJson from './UserDataJson.json'
 import IconButton from '@mui/material/IconButton'
+import { v4 as uuid } from 'uuid'
 
 type Department = {
   id: string
@@ -52,14 +56,6 @@ function buildColumns(
       valueGetter(params) {
         return departments.find((d) => d.id === params.row.departmentId)?.name
       },
-      renderEditCell(params: GridRenderCellParams<Person>) {
-        return (
-          <Select>
-            <MenuItem></MenuItem>
-          </Select>
-        )
-      },
-      // valueSetter: () => {}
     },
     {
       field: 'managerId',
@@ -114,9 +110,20 @@ function App() {
 
   const [people, setPeople] = useState(parsedPersistedPeopleObj.people)
   const departments = UserDataJson.departments
+  const addPerson = () =>
+    setPeople(
+      [
+        {
+          id: uuid(),
+          firstName: '',
+          lastName: '',
+          jobTitle: '',
+          departmentId: '',
+        },
+      ].concat(people)
+    )
   const removePerson = (personId: string) =>
     setPeople(people.filter((p) => p.id !== personId))
-
   const updatePerson = (person: Person) => {
     setPeople(
       people.map((p) => {
@@ -131,6 +138,19 @@ function App() {
     return localStorage.setItem('people', JSON.stringify({ people }))
   }, [people])
 
+  const Toolbar = () => (
+    <GridToolbarContainer>
+      <IconButton
+        onClick={() => {
+          addPerson()
+        }}
+        aria-label="Add New Person"
+      >
+        + New Person
+      </IconButton>
+    </GridToolbarContainer>
+  )
+
   return (
     <div className="App">
       <Box sx={{ height: 600, width: '75vw' }}>
@@ -142,6 +162,7 @@ function App() {
             return newRow
           }}
           checkboxSelection
+          slots={{ toolbar: Toolbar }}
           aria-label="employees"
         ></DataGrid>
       </Box>
